@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 1400px;
+                 background-color: #222222;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "font": {"color": "white"}, "id": "Haldan", "label": "Haldan", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Mike", "label": "Mike", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Jesper", "label": "Jesper", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Martin", "label": "Martin", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Troels", "label": "Troels", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Christoffer", "label": "Christoffer", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Mathias", "label": "Mathias", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Jeppe", "label": "Jeppe", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Jacob", "label": "Jacob", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "HH", "label": "HH", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Peter", "label": "Peter", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Camilla", "label": "Camilla", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Michael", "label": "Michael", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Caro", "label": "Caro", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Mussab", "label": "Mussab", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Thomas", "label": "Thomas", "shape": "dot", "size": 10}]);
+                  edges = new vis.DataSet([{"from": "Haldan", "to": "Mike", "width": 7}, {"from": "Haldan", "to": "Jesper", "width": 3}, {"from": "Haldan", "to": "Martin", "width": 3}, {"from": "Haldan", "to": "Troels", "width": 2}, {"from": "Haldan", "to": "Christoffer", "width": 2}, {"from": "Haldan", "to": "Mathias", "width": 4}, {"from": "Haldan", "to": "Jeppe", "width": 4}, {"from": "Haldan", "to": "Jacob", "width": 0}, {"from": "Haldan", "to": "HH", "width": 17}, {"from": "Haldan", "to": "Peter", "width": 0}, {"from": "Haldan", "to": "Camilla", "width": 1}, {"from": "Haldan", "to": "Michael", "width": 0}, {"from": "Haldan", "to": "Caro", "width": 0}, {"from": "Haldan", "to": "Mussab", "width": 0}, {"from": "Haldan", "to": "Thomas", "width": 0}, {"from": "Mike", "to": "Jesper", "width": 23}, {"from": "Mike", "to": "Martin", "width": 0}, {"from": "Mike", "to": "Troels", "width": 2}, {"from": "Mike", "to": "Christoffer", "width": 1}, {"from": "Mike", "to": "Mathias", "width": 8}, {"from": "Mike", "to": "Jeppe", "width": 0}, {"from": "Mike", "to": "Jacob", "width": 0}, {"from": "Mike", "to": "HH", "width": 4}, {"from": "Mike", "to": "Peter", "width": 0}, {"from": "Mike", "to": "Camilla", "width": 0}, {"from": "Mike", "to": "Michael", "width": 0}, {"from": "Mike", "to": "Caro", "width": 0}, {"from": "Mike", "to": "Mussab", "width": 0}, {"from": "Mike", "to": "Thomas", "width": 0}, {"from": "Jesper", "to": "Martin", "width": 0}, {"from": "Jesper", "to": "Troels", "width": 1}, {"from": "Jesper", "to": "Christoffer", "width": 0}, {"from": "Jesper", "to": "Mathias", "width": 5}, {"from": "Jesper", "to": "Jeppe", "width": 1}, {"from": "Jesper", "to": "Jacob", "width": 0}, {"from": "Jesper", "to": "HH", "width": 6}, {"from": "Jesper", "to": "Peter", "width": 0}, {"from": "Jesper", "to": "Camilla", "width": 0}, {"from": "Jesper", "to": "Michael", "width": 0}, {"from": "Jesper", "to": "Caro", "width": 0}, {"from": "Jesper", "to": "Mussab", "width": 0}, {"from": "Jesper", "to": "Thomas", "width": 0}, {"from": "Martin", "to": "Troels", "width": 0}, {"from": "Martin", "to": "Christoffer", "width": 0}, {"from": "Martin", "to": "Mathias", "width": 0}, {"from": "Martin", "to": "Jeppe", "width": 0}, {"from": "Martin", "to": "Jacob", "width": 0}, {"from": "Martin", "to": "HH", "width": 0}, {"from": "Martin", "to": "Peter", "width": 0}, {"from": "Martin", "to": "Camilla", "width": 0}, {"from": "Martin", "to": "Michael", "width": 0}, {"from": "Martin", "to": "Caro", "width": 0}, {"from": "Martin", "to": "Mussab", "width": 0}, {"from": "Martin", "to": "Thomas", "width": 0}, {"from": "Troels", "to": "Christoffer", "width": 23}, {"from": "Troels", "to": "Mathias", "width": 1}, {"from": "Troels", "to": "Jeppe", "width": 0}, {"from": "Troels", "to": "Jacob", "width": 1}, {"from": "Troels", "to": "HH", "width": 1}, {"from": "Troels", "to": "Peter", "width": 2}, {"from": "Troels", "to": "Camilla", "width": 0}, {"from": "Troels", "to": "Michael", "width": 0}, {"from": "Troels", "to": "Caro", "width": 0}, {"from": "Troels", "to": "Mussab", "width": 0}, {"from": "Troels", "to": "Thomas", "width": 0}, {"from": "Christoffer", "to": "Mathias", "width": 2}, {"from": "Christoffer", "to": "Jeppe", "width": 0}, {"from": "Christoffer", "to": "Jacob", "width": 0}, {"from": "Christoffer", "to": "HH", "width": 2}, {"from": "Christoffer", "to": "Peter", "width": 0}, {"from": "Christoffer", "to": "Camilla", "width": 0}, {"from": "Christoffer", "to": "Michael", "width": 0}, {"from": "Christoffer", "to": "Caro", "width": 0}, {"from": "Christoffer", "to": "Mussab", "width": 0}, {"from": "Christoffer", "to": "Thomas", "width": 0}, {"from": "Mathias", "to": "Jeppe", "width": 0}, {"from": "Mathias", "to": "Jacob", "width": 0}, {"from": "Mathias", "to": "HH", "width": 1}, {"from": "Mathias", "to": "Peter", "width": 0}, {"from": "Mathias", "to": "Camilla", "width": 1}, {"from": "Mathias", "to": "Michael", "width": 0}, {"from": "Mathias", "to": "Caro", "width": 0}, {"from": "Mathias", "to": "Mussab", "width": 0}, {"from": "Mathias", "to": "Thomas", "width": 0}, {"from": "Jeppe", "to": "Jacob", "width": 0}, {"from": "Jeppe", "to": "HH", "width": 0}, {"from": "Jeppe", "to": "Peter", "width": 0}, {"from": "Jeppe", "to": "Camilla", "width": 0}, {"from": "Jeppe", "to": "Michael", "width": 0}, {"from": "Jeppe", "to": "Caro", "width": 3}, {"from": "Jeppe", "to": "Mussab", "width": 0}, {"from": "Jeppe", "to": "Thomas", "width": 0}, {"from": "Jacob", "to": "HH", "width": 0}, {"from": "Jacob", "to": "Peter", "width": 0}, {"from": "Jacob", "to": "Camilla", "width": 0}, {"from": "Jacob", "to": "Michael", "width": 0}, {"from": "Jacob", "to": "Caro", "width": 0}, {"from": "Jacob", "to": "Mussab", "width": 0}, {"from": "Jacob", "to": "Thomas", "width": 0}, {"from": "HH", "to": "Peter", "width": 0}, {"from": "HH", "to": "Camilla", "width": 0}, {"from": "HH", "to": "Michael", "width": 1}, {"from": "HH", "to": "Caro", "width": 0}, {"from": "HH", "to": "Mussab", "width": 0}, {"from": "HH", "to": "Thomas", "width": 0}, {"from": "Peter", "to": "Camilla", "width": 0}, {"from": "Peter", "to": "Michael", "width": 0}, {"from": "Peter", "to": "Caro", "width": 0}, {"from": "Peter", "to": "Mussab", "width": 0}, {"from": "Peter", "to": "Thomas", "width": 0}, {"from": "Camilla", "to": "Michael", "width": 1}, {"from": "Camilla", "to": "Caro", "width": 0}, {"from": "Camilla", "to": "Mussab", "width": 0}, {"from": "Camilla", "to": "Thomas", "width": 0}, {"from": "Michael", "to": "Caro", "width": 0}, {"from": "Michael", "to": "Mussab", "width": 0}, {"from": "Michael", "to": "Thomas", "width": 0}, {"from": "Caro", "to": "Mussab", "width": 0}, {"from": "Caro", "to": "Thomas", "width": 0}, {"from": "Mussab", "to": "Thomas", "width": 0}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"physics": {"barnesHut": {"gravitationalConstant": -25000, "springLength": 195, "springConstant": 0.045, "damping": 0.21, "avoidOverlap": 0.97}, "maxVelocity": 7, "minVelocity": 0.75}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

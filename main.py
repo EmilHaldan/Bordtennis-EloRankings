@@ -56,19 +56,23 @@ def validate_names(player_1, player_2):
 st.set_page_config(layout="wide")#, width=800, initial_sidebar_state="expanded")
 siteHeader = st.container()
 insert_match = st.container()
+show_last_5_matches = st.container()
 visualize_graph_section = st.container()
 leader_board_section = st.container()
 leader_board_section_2 = st.container()
 elo_rating_history_section = st.container()
 
+show_5_matches = True
+text_header = "Show last 5 matches"
+
 
 with siteHeader:
-    st.title('Table Tennis Elo-Ratings')
-    st.text('Some text here')
+    st.title('Bordtennis Elo-Ratings')
+    # st.text('Some text here')
 
 with insert_match:
     st.header('Insert Game Results')
-    st.text('dashbdak Some text here')
+    # st.text('dashbdak Some text here')
 
     with st.form("Game Results", clear_on_submit = True):
         player_1_name_insert  = st.text_input('Player 1 Name')
@@ -77,7 +81,7 @@ with insert_match:
         player_2_score_insert = st.selectbox('Player 2', [0,1,2])
 
         # Every form must have a submit button.
-        st.text('Only press the button once!')
+        # st.text('Only press the button once!')
         submitted = st.form_submit_button('Confirm Game Results')
         if submitted and (player_1_name_insert != '') and (player_2_name_insert != '') and (player_1_score_insert != player_2_score_insert):
             if validate_names(player_1_name_insert, player_2_name_insert):
@@ -88,9 +92,27 @@ with insert_match:
             else: 
                 st.write('ERROR: Please enter valid names!')
                 time.sleep(2)
+        elif submitted and (player_1_name_insert == '') or (player_2_name_insert == ''):
+            pass
         else: 
             st.write('ERROR: Please fill in all fields and make sure that the scores are appropriate')
             time.sleep(2)
+
+with show_last_5_matches:
+    with st.form("Matches", clear_on_submit = False):
+        if show_5_matches:
+            text_header = "Show last 5 matches"
+            st.header(text_header)
+            show_all_matches = st.form_submit_button('Show All Matches')
+            matches_df_5 = pd.read_excel("Matches.xlsx").tail(5)
+            st.table(matches_df_5.reindex(index=matches_df_5.index[::-1]))
+        elif show_all_matches:
+            text_header = "Show all matches"
+            st.header(text_header)
+            show_5_matches = st.form_submit_button('Hide All Matches')
+            matches_df = pd.read_excel("Matches.xlsx")
+            st.table(matches_df.reindex(index=matches_df.index[::-1]))
+        
 
 with visualize_graph_section:
     st.header('A network showing who can play against who')
@@ -104,7 +126,7 @@ with visualize_graph_section:
 
 with leader_board_section:
     st.header('Current Leader Board')
-    st.text('Add something cool here ')
+    # st.text('Add something cool here ')
 
     # change data types of columns in elo_rating_df
     elo_rating_df['Anulled'] = elo_rating_df['Anulled'].astype(int)
@@ -113,7 +135,5 @@ with leader_board_section:
 
 with elo_rating_history_section:
     st.header('History of Elo-Ratings')
-    st.text('Some more text here ')
-    HtmlFile = open("Elo_Rankings.html", 'r', encoding='utf-8')
-    source_code = HtmlFile.read() 
+    # st.text('Some more text here ')
     st.plotly_chart(plotly_fig, use_container_width=True)#, width = 800)

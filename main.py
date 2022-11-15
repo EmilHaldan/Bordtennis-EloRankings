@@ -40,9 +40,9 @@ def insert_game_result(player_1, player_2, player_1_score, player_2_score):
 def validate_names(player_1, player_2):
     players = read_players()
     if (player_1 in players) and (player_2 in players):
-        return True
-    else:
-        return False
+        if player_1 != player_2:
+            return True
+    return False
 
 
 ### Streamlit stuff
@@ -77,11 +77,14 @@ with insert_match:
         player_2_name_insert  = st.selectbox('Player 2 Name', ["Player 2"] + [x for x in read_players() if x != player_1_name_insert])
         player_2_score_insert = st.selectbox('Player 2', [0,1,2])
 
+        player_1_name_insert = player_1_name_insert.strip()
+        player_2_name_insert = player_2_name_insert.strip()
+
         # Every form must have a submit button.
         # st.text('Only press the button once!')
 
         submitted = st.form_submit_button('Confirm Game Results')
-        if submitted and (player_1_name_insert != 'Player 1') and (player_2_name_insert != 'Player 2') and (int(player_1_score_insert)+ int(player_2_score_insert) == 3):
+        if submitted and (player_1_name_insert != 'Player 1') and (player_2_name_insert != 'Player 2') and ((int(player_1_score_insert)+ int(player_2_score_insert)) == 3):
             if validate_names(player_1_name_insert, player_2_name_insert):
                 st.write('✅ Game submitted! If the submission was a mistake, please write the date and time of the game to Haldan :)') 
                 insert_game_result(player_1_name_insert, player_2_name_insert, 

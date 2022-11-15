@@ -384,19 +384,19 @@ def visualize_network(open_browser=True):
 
                     if weight > 0:
                         if weight > max( players_dict[main_player]["same_match_threshold"], players_dict[player_2]["same_match_threshold"]):
-                            G.add_edge(main_player_display_name, player_2_display_name, color='red', weight=weight)
+                            G.add_edge(main_player_display_name, player_2_display_name, color='red', weight=(weight+2)/2)
                             print("   Player: ", main_player, "  Player 2: ", player_2, "  has", weight, "matches together")
                             print("   Local threshold for players: ", max( players_dict[main_player]["same_match_threshold"], players_dict[player_2]["same_match_threshold"]))
                             print("")
                         elif weight > max( players_dict[main_player]["same_match_threshold"], players_dict[player_2]["same_match_threshold"])*0.7:
-                            G.add_edge(main_player_display_name, player_2_display_name, color='orange', weight=weight)
+                            G.add_edge(main_player_display_name, player_2_display_name, color='orange', weight=(weight+2)/2)
                         else: 
-                            G.add_edge(main_player_display_name, player_2_display_name, color='green', weight=weight)
+                            G.add_edge(main_player_display_name, player_2_display_name, color='green', weight=(weight+2)/2)
                     else:
                         pass
                         # if sum(players_dict[main_player]["matches_played"].values()):
                         #     if sum(players_dict[player_2]["matches_played"].values()):
-                        #         G.add_edge(main_player, player_2, weight=0.1)
+                        #         G.add_edge(main_player_display_name, player_2_display_name, weight=0.5, color='grey')
 
                 except KeyError as e:
                     print("e: ", e)
@@ -423,14 +423,16 @@ def visualize_network(open_browser=True):
     "physics": {
         "repulsion": {
         "gravitationalConstant": -30000,
-        "springLength": 500,
+        "centralGravity":0.1,
+        "springLength": 700,
         "springConstant": 0.045,
         "damping": 0.21,
-        "avoidOverlap": 1
+        "avoidOverlap": 10
         },
         "maxVelocity": 7,
         "minVelocity": 0.75}}
         """
+
     net.set_options(const_options)
 
     #play with the physics:
@@ -462,7 +464,9 @@ def print_leader_board(test):
     elo_rating_df['Win Rate'] = 0.5
     elo_rating_df['Wins'] = 0
     elo_rating_df['Losses'] = 0
-    elo_rating_df['Matches Played'] = 0
+    elo_rating_df["Valid Matches"] = 0
+    elo_rating_df["Anulled Matches"] = 0
+    elo_rating_df["Total Matches"] = 0
 
     if test:
         matches_df = pd.read_excel("Matches_test.xlsx")
@@ -500,11 +504,13 @@ def print_leader_board(test):
         player_name = row["Name"]
 
         if player_name in matches_dict:
-            elo_rating_df.loc[idx, "Win Rate"] = matches_won_dict[player_name] / matches_dict[player_name]
+            elo_rating_df.loc[idx, "Win Rate"] = str(round( matches_won_dict[player_name] / (matches_won_dict[player_name] + matches_lost_dict[player_name]) , 2))
+            # convert win rate to 2 decimal places as a string 
             elo_rating_df.loc[idx, "Wins"] = matches_won_dict[player_name]
             elo_rating_df.loc[idx, "Losses"] = matches_lost_dict[player_name]
-            elo_rating_df.loc[idx, "Anulled"] = matches_annulled_dict[player_name]
-            elo_rating_df.loc[idx, "Matches Played"] = matches_dict[player_name]
+            elo_rating_df.loc[idx, "Valid Matches"] = matches_dict[player_name] - matches_annulled_dict[player_name]
+            elo_rating_df.loc[idx, "Anulled Matches"] = matches_annulled_dict[player_name]
+            elo_rating_df.loc[idx, "Total Matches"] = matches_dict[player_name]
         else:
             elo_rating_df.drop(elo_rating_df[elo_rating_df["Name"] == player_name].index, inplace=True)
 
@@ -516,9 +522,17 @@ def print_leader_board(test):
 
     # Metrics
     mean_elo_rating = int(elo_rating_df['Elo Rating'].mean())
-    total_matches = elo_rating_df['Matches Played'].sum()//2
+    total_matches = elo_rating_df['Total Matches'].sum()//2
+    valid_matches = elo_rating_df['Valid Matches'].sum()//2
+    matches_annulled = elo_rating_df['Anulled Matches'].sum()//2
+
+    # print("elo_rating_df: ")
+    # print(elo_rating_df)
 
     streamlit_table = elo_rating_df.copy()
+
+    # print("streamlit_table: ")
+    # print(streamlit_table)
 
     #  Redundant String formatting
     elo_rating_df["Ranking"] = ["       "+str(i+1)+"       " for i in elo_rating_df["Ranking"]]
@@ -526,7 +540,7 @@ def print_leader_board(test):
     elo_rating_df['Elo Rating'] = ["       "+str(i)+"       " for i in elo_rating_df["Elo Rating"]]
     print(tabulate(elo_rating_df, headers='keys', tablefmt='rst', showindex=False))
     print("\n")
-    print(f"     Mean Elo Rating: {mean_elo_rating}    Total Matches: {total_matches}    Matches pr. Person {2*total_matches/len(elo_rating_df):.2f}")
+    print(f"        Mean Elo Rating: {mean_elo_rating}    Total Matches: {total_matches}    Valid Matches: {valid_matches}    Matches pr. Person {2*total_matches/len(elo_rating_df):.2f}")
     print("\n"*2)
     print("#"*30)
 

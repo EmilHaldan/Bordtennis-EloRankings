@@ -7,6 +7,10 @@ import pandas as pd
 
 test = False
 base_elo = 1500
+plotly_fig = visualize_elo_history(open_browser = False)
+visualize_network(open_browser = False)
+elo_rating_df = print_leader_board(test)
+
 
 def insert_game_result(player_1, player_2, player_1_score, player_2_score):
     
@@ -57,8 +61,17 @@ visualize_graph_section = st.container()
 elo_rating_history_section = st.container()
 
 show_5_matches = True
-text_header = "Show last 5 matches"
 
+def refresh_data():
+    global plotly_fig
+    global elo_rating_df
+
+    plotly_fig = visualize_elo_history(open_browser = False)
+    visualize_network(open_browser = False)
+    elo_rating_df = print_leader_board(test)
+
+
+refresh_data()
 
 with siteHeader:
     calculate_elo_for_all(K = 32, base_elo = base_elo, test = test)
@@ -72,9 +85,9 @@ with insert_match:
     with st.form("Game Results", clear_on_submit = True):
         player_1_name_insert = "Player 1"
         player_2_name_insert = "Player 2"
-        player_1_name_insert  = st.selectbox('Player 1 Name', ["Player 1"] + [x for x in read_players() if x != player_2_name_insert])
+        player_1_name_insert  = st.selectbox('Player 1 Name', ["Player 1"] + [x for x in read_players()])
         player_1_score_insert = st.selectbox('Player 1', [0,1,2])
-        player_2_name_insert  = st.selectbox('Player 2 Name', ["Player 2"] + [x for x in read_players() if x != player_1_name_insert])
+        player_2_name_insert  = st.selectbox('Player 2 Name', ["Player 2"] + [x for x in read_players()])
         player_2_score_insert = st.selectbox('Player 2', [0,1,2])
 
         player_1_name_insert = player_1_name_insert.strip()
@@ -84,17 +97,22 @@ with insert_match:
         # st.text('Only press the button once!')
 
         submitted = st.form_submit_button('Confirm Game Results')
-        if submitted and (player_1_name_insert != 'Player 1') and (player_2_name_insert != 'Player 2') and ((int(player_1_score_insert)+ int(player_2_score_insert)) == 3):
+        print("submitted: ", submitted)
+        print("player_1_name_insert: ", player_1_name_insert)
+        print("player_2_name_insert: ", player_2_name_insert)
+        print("player_1_score_insert: ", player_1_score_insert)
+        print("player_2_score_insert: ", player_2_score_insert)
+        print("Condition: ", (submitted and (player_1_name_insert != 'Player 1') and (player_2_name_insert != 'Player 2') and ((int(player_1_score_insert)+ int(player_2_score_insert)) >= 2) and (player_1_score_insert != player_2_score_insert) ))
+        print("Condition validate names: ", validate_names(player_1_name_insert, player_2_name_insert))
+        if submitted and (player_1_name_insert != 'Player 1') and (player_2_name_insert != 'Player 2') and ((int(player_1_score_insert)+ int(player_2_score_insert)) >= 2) and (player_1_score_insert != player_2_score_insert):
             if validate_names(player_1_name_insert, player_2_name_insert):
                 st.write('✅ Game submitted! If the submission was a mistake, please write the date and time of the game to Haldan :)') 
                 insert_game_result(player_1_name_insert, player_2_name_insert, 
                                    player_1_score_insert, player_2_score_insert)
-                time.sleep(1.5)
+                refresh_data()
             else: 
                 st.write('🚨 Please enter valid names!')
                 time.sleep(1.5)
-        elif submitted and (player_1_name_insert == '') or (player_2_name_insert == ''):
-            pass
         else: 
             st.write('🚨 Please fill in all fields and make sure that the scores are appropriate')
             time.sleep(1.5)
@@ -118,7 +136,6 @@ with leader_board_section:
     
     st.header('Current Leader Board')
     # st.text('Add something cool here ')
-    elo_rating_df = print_leader_board(test)
 
     # change data types of columns in elo_rating_df
     elo_rating_df['Anulled Matches'] = elo_rating_df['Anulled Matches'].astype(int)
@@ -128,7 +145,7 @@ with leader_board_section:
 
 
 with visualize_graph_section:
-    visualize_network(open_browser = False)
+    
 
     st.header('A network showing all recorded matches')
     st.text('Red: The threshold for consecuive matches with the same oppenent has been met')
@@ -142,7 +159,6 @@ with visualize_graph_section:
 
 
 with elo_rating_history_section:
-    plotly_fig = visualize_elo_history(open_browser = False)
     st.header('History of Elo-Ratings')
     # st.text('Some more text here ')
     st.plotly_chart(plotly_fig, use_container_width=True)#, width = 800)

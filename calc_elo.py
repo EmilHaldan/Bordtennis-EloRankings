@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from _datetime import datetime
+from datetime import datetime
 import time
 import plotly.express as px
 from tabulate import tabulate

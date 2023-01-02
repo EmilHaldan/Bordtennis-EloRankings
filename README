@@ -1,0 +1,10 @@
+How To run: 
+Run main.py and follow instructions to load the GUI app.
+Run calc_elo.py for the command prompt version.
+
+Information and requirements:
+The file "Matches.xlsx" contians a structued list of matches, where all data points for each entry are required. 
+There is not a requirements.txt as the project was not intended to be open source.
+The calculations of elo ranking have recieved slight artistic changes, further explaination in the source code.
+Can be used for other games that ping pong...
+
